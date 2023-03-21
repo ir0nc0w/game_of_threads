@@ -1,0 +1,138 @@
+# simulate an attack on pytorch hogwild instances
+# use the baselines script to run out of scratch
+Executable = /home/josers2/apa/pytorch.examples/main.py
+
+# TODO verify formatting
+runname = flavor3preshort_$(optim)_$(batch_size)_$(atk_batches)-$(target_label)-$(bias)-$(step)
+# ckpt_name = /shared/jose/pytorch/checkpoints/baseline-1-0.ckpt
+# ckpt_name = /shared/jose/pytorch/outputs/resize.hogwild/train.ckpt
+ckpt_name = /shared/jose/apa_res/$(optim)_bs$(batch_size)_base.ckpt
+# specify optim in CLI
+# specify batch_size in CLI
+
+Output = /shared/jose/pytorch/$(runname).out
+Error  = /shared/jose/pytorch/$(runname).err
+Log    = /shared/jose/pytorch/$(runname).log
+
+requirements = (machine == "weapon.cs.illinois.edu")
+
+# system set up
+request_GPUs = 1
+request_CPUs = 1
+
+should_transfer_files = NO
+
+numWorkers = 1
+
+Arguments = "--lr 0.1 \
+             --batch-size $(batch_size) \
+             --tmp-dir /scratch/jose/apa_runs \
+             --final-dir /shared/jose/apa_res \
+             --attack-checkpoint-path $(runname) \
+             --baseline-checkpoint-path $(ckpt_name) \
+             --resume 350 \
+             --optimizer $(optim) \
+             --target $(target_label) \
+             --bias $(bias) \
+             --num-processes $(numWorkers) \
+             $(runname) \
+             simulate \
+             --attack-batches $(atk_batches)"
+
+# priority = 15
+#
+# atk_batches = 25
+#
+# bias = 0.20
+# Queue 10 target_label from (
+#         # 0
+#         1
+#         # 2
+#         3
+#         # 4
+#         # 5
+#         # 6
+#         7
+#         # 8
+#         # 9
+# )
+
+atk_batches = 4
+
+priority = 14 - $(step)
+
+target_label = 0
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 1
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+        # 0.60
+        # 0.70
+        # 0.80
+        # 0.90
+        # 1.00
+)
+
+target_label = 2
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 3
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 4
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 5
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 6
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 7
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 8
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
+target_label = 9
+Queue 10 bias from (
+        # 0.30
+        # 0.40
+        0.50
+)
+
